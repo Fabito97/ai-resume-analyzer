@@ -10,7 +10,7 @@ const ResumeCard = ({
     return (
         <Link to={`/resume/${id}`} className="resume-card animate-in fade-in duration-1000">
             <div className="resume-card-header">
-                <div className="flex flex-col gap-2 max-sm:items-center">
+                <div className="flex flex-col sm:gap-2 max-sm:items-center">
                     <h2 className="!text-black font-bold break-words">{companyName}</h2>
                     <h3 className={"text-lg break-words text-gray-500"}>{jobTitle}</h3>
                 </div>
@@ -19,7 +19,7 @@ const ResumeCard = ({
                 </div>
             </div>
             <div className={"gradient-border animate-in fade-in duration-1000"}>
-                <div className="w-full h-full">
+                <div className="w-full h-full shadow-2xl">
                     <img
                         src={imagePath}
                         alt="resume"
