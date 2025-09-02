@@ -10,11 +10,16 @@ export const meta = () => ([
 const Auth = () => {
     const { isLoading, auth } = usePuterStore();
     const location = useLocation();
-    const next = location.search.split('next=')[1]
+    let next = location.search.split('next=')[1]
     const navigate = useNavigate();
+    const params = new URLSearchParams(location.search);
+    // const next = params.get('next') || '/'; // fallback to home or default route
 
     useEffect(() => {
-        if(auth.isAuthenticated) navigate(next)
+        if(auth.isAuthenticated) {
+            console.log("Navigating to next:", next)
+            navigate(next)
+        } 
     }, [auth.isAuthenticated, next]);
 
     return (

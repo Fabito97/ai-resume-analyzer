@@ -1,5 +1,5 @@
 import { prepareInstructions } from "constants/index";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import FileUploader from "~/components/FileUploader";
 import Navbar from "~/components/Navbar";
@@ -13,6 +13,10 @@ const upload = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [statusText, setStatusText] = useState("");
   const [file, setFile] = useState<File | null>(null);
+
+  useEffect(() => {
+    if(!auth.isAuthenticated) navigate("auth?next=/upload")
+  }, [auth.isAuthenticated])
 
   const handleAnalyze = async ({
     companyName,
@@ -32,13 +36,17 @@ const upload = () => {
 
     setStatusText("Converting to image...")
     const imageFile = await convertPdfToImage(file);
-    if(!imageFile.file) return setStatusText("Error: Failed to convert PDF to image. Please try again.");
+    console.log("Image File:", imageFile)
+    if(!imageFile.file) {
+      // setIsProcessing(false)
+      return setStatusText("Error: Failed to convert PDF to image. Please try again.");
+    }
 
     setStatusText("Uploading the image...")
     const uploadedImage = await fs.upload([imageFile.file]);
     if(!uploadedImage) return setStatusText("Error: Failed to upload image. Please try again.");
 
-    setStatusText("Prparing data...")
+    setStatusText("Preparing data...")
     const uuid = generateUUID();
     const data = {
       id: uuid,
@@ -50,21 +58,25 @@ const upload = () => {
       feedback: "",
     }
     await kv.set(`resume:${uuid}`, JSON.stringify(data));
-
+    
+    console.log("Form Data:", JSON.stringify(data))
     setStatusText('Analyzing... This may take a few minutes.')
-
+    const message = prepareInstructions({ jobTitle, jobDescription })
+    console.log("Message:", message)
     const feedback = await ai.feedback(
       uploadedFile.path,
-      prepareInstructions({ jobTitle, jobDescription })
+      message
     )
     if(!feedback) return setStatusText("Error: Failed to analyze resume. Please try again.");
 
-    const feedbackText = typeof feedback.message.content === "string" ? feedback.message.content : feedback.message.content[0].text;
+    const feedbackText = typeof feedback.message.content === "string" 
+      ? feedback.message.content 
+      : feedback.message.content[0].text;
     
     data.feedback = JSON.parse(feedbackText);
     await kv.set(`resume:${uuid}`, JSON.stringify(data));
 
-    setStatusText("Analysis complet, redirecting...")
+    setStatusText("Analysis complete, redirecting...")
     console.log("Data:", data);
 
     navigate(`/resume/${uuid}`);
@@ -76,7 +88,6 @@ const upload = () => {
     const form = e.currentTarget.closest("form");
     if (!form) return;
     const formData = new FormData(form);
-
     const companyName = formData.get("company-name") as string;
     const jobTitle = formData.get("job-title") as string;
     const jobDescription = formData.get("job-description") as string;

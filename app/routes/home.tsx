@@ -19,7 +19,7 @@ export default function Home() {
   const [loadingResumes, setLoadingResumes] = useState(false);
 
   useEffect(() => {
-    if(auth.isAuthenticated) navigate('auth?next=')
+    if(!auth.isAuthenticated) navigate('auth?next=/')
   }, [auth.isAuthenticated]);
 
   useEffect(() => {
@@ -39,7 +39,7 @@ export default function Home() {
     }
 
     loadResumes();
-  }, [resumes])
+  }, [])
   
 
   return <main className="bg-[url('/images/bg-main.svg')]">
@@ -52,8 +52,7 @@ export default function Home() {
           <h2>No resumes found. Upload your first resume to get feedback.</h2>
         ):(
           <h2>Review your submissions and check AI-powered feedback.</h2>
-        )}
-        <h2>Review your submissions and check AI-powered feedback.</h2>
+        )}       
       </div>
 
       {loadingResumes && (

@@ -19,16 +19,18 @@ const resume = () => {
   const [imageUrl, setImagUrl] = useState<string | null>();
   const [resumeUrl, setResumeUrl] = useState<string | null>();
   const [feedback, setFeedback] = useState<Feedback | null>(null);
+  const [feedbackLoading, setFeedbackLoading] = useState<boolean>(false);
   const navigate = useNavigate();
   
   
   useEffect(() => {
-    if(!isLoading && auth.isAuthenticated) navigate(`auth?next=/resume/${id}`)
+    if(!isLoading && !auth.isAuthenticated) navigate(`auth?next=/resume/${id}`)
   }, [isLoading]);
 
-
+  console.log("Feedback:", feedback)
   useEffect(() => {
     const loadResume = async () => {
+      setFeedbackLoading(true)
       const resume = await kv.get(`resume:${id}`);
       if(!resume) return;
 
@@ -47,6 +49,7 @@ const resume = () => {
       setImagUrl(imageUrl);
 
       setFeedback(data.feedback);
+      setFeedbackLoading(false)
       console.log({resumeUrl, imageUrl, feedback: data.feedback});
     };
 
@@ -73,14 +76,23 @@ const resume = () => {
         </section>
         <section className='feedback-section'>
           <h2 className='text-4xl text-black font-bold'>Resume Review</h2>
-          {feedback ? (
-           <div className='flex flex-col gap-8 animat-in fade-in duration-1000'>
+          
+          {feedbackLoading && !feedback ? (
+            <>
+            <img src="/images/resume-scan-2.gif" alt="" className='w-full'/>
+            </>
+          ) :
+          feedback ? (
+            <div className='flex flex-col gap-8 animat-in fade-in duration-1000'>
              <Summary feedback={feedback}/>
              <ATS score={feedback.ATS.score || 0} suggestions={feedback.ATS.tips || []}/>
              <Details feedback={feedback} />
            </div>
            ) : (
-            <img src="/images/resume-scan-2.gif" alt="" className='w-full'/>
+            <div className='flex items-center justify-center h-[70%]'>
+
+             <p className='text-xl'>No Feedback Given</p>
+            </div>
            )}
         </section>
       </div>
