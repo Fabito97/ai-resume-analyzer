@@ -48,7 +48,7 @@ const CategoryHeader = ({
 }) => {
   return (
     <div className="flex flex-row gap-4 items-center py-2">
-      <p className="text-2xl font-semibold">{title}</p>
+      <p className="text-2xl font-semibold dark:!text-white">{title}</p>
       <ScoreBadge score={categoryScore} />
     </div>
   );
@@ -61,9 +61,9 @@ const CategoryContent = ({
 }) => {
   return (
     <div className="flex flex-col gap-4 items-center w-full">
-      <div className="bg-gray-50 w-full rounded-lg px-5 py-4 grid grid-cols-2 gap-4">
+      <div className="bg-gray-50 w-full rounded-lg px-5 py-4 gri grid-cols-2 gap-4">
         {tips.map((tip, index) => (
-          <div className="flex flex-row gap-2 items-center" key={index}>
+          <div className="flex flex-row gap-2 items-center mb-1" key={index}>
             <img
               src={
                 tip.type === "good" ? "/icons/check.svg" : "/icons/warning.svg"
@@ -71,7 +71,7 @@ const CategoryContent = ({
               alt="score"
               className="size-5"
             />
-            <p className="text-xl text-gray-500 ">{tip.tip}</p>
+            <p className="text-sm text-gray-500 ">{tip.tip}</p>
           </div>
         ))}
       </div>
@@ -121,6 +121,7 @@ const Details = ({ feedback }: { feedback: Feedback }) => {
             <CategoryContent tips={feedback.toneAndStyle.tips} />
           </AccordionContent>
         </AccordionItem>
+
         <AccordionItem id="content">
           <AccordionHeader itemId="content">
             <CategoryHeader
@@ -132,6 +133,7 @@ const Details = ({ feedback }: { feedback: Feedback }) => {
             <CategoryContent tips={feedback.content.tips} />
           </AccordionContent>
         </AccordionItem>
+
         <AccordionItem id="structure">
           <AccordionHeader itemId="structure">
             <CategoryHeader
@@ -143,6 +145,7 @@ const Details = ({ feedback }: { feedback: Feedback }) => {
             <CategoryContent tips={feedback.structure.tips} />
           </AccordionContent>
         </AccordionItem>
+        
         <AccordionItem id="skills">
           <AccordionHeader itemId="skills">
             <CategoryHeader

@@ -60,9 +60,11 @@ const upload = () => {
     await kv.set(`resume:${uuid}`, JSON.stringify(data));
     
     console.log("Form Data:", JSON.stringify(data))
+
     setStatusText('Analyzing... This may take a few minutes.')
     const message = prepareInstructions({ jobTitle, jobDescription })
     console.log("Message:", message)
+
     const feedback = await ai.feedback(
       uploadedFile.path,
       message
@@ -82,6 +84,7 @@ const upload = () => {
     navigate(`/resume/${uuid}`);
   };
 
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -97,16 +100,17 @@ const upload = () => {
     handleAnalyze({ companyName, jobTitle, jobDescription, file });
   };
 
+
   const handleFileSelect = (file: File | null) => {
     setFile(file);
   };
 
   return (
-    <main className="bg-[url('/images/bg-main.svg')]">
+    <main className="bg-[url('/images/bg-main.svg')] dark:bg-none dark:!bg-blue-950 dark:!text-white">
       <Navbar />
       <section className="main-section">
         <div className="page-heading py-16">
-          <h1>Smart feedback for your dream job</h1>
+          <h1 className="dark:!text-gray-300">Smart feedback for your dream job</h1>
           {isProcessing ? (
             <>
               <h2>{statusText}</h2>
@@ -117,16 +121,16 @@ const upload = () => {
               />
             </>
           ) : (
-            <h2>Drop your resume for an ATS score and improvement tips</h2>
+            <h2 className="dark:!text-gray-300">Drop your resume for an ATS score and improvement tips</h2>
           )}
           {!isProcessing && (
             <form
               id="upload-form"
               onSubmit={handleSubmit}
-              className="flex flex-col gap-4 mt-8"
+              className="flex flex-col gap-4 mt-8 main-form"
             >
               <div className="form-div">
-                <label htmlFor="company-name">Company Name</label>
+                <label className="dark:!text-gray-300" htmlFor="company-name">Company Name</label>
                 <input
                   type="text"
                   name="company-name"
@@ -135,7 +139,7 @@ const upload = () => {
                 />
               </div>
               <div className="form-div">
-                <label htmlFor="job-title">Job Title</label>
+                <label className="dark:!text-gray-300" htmlFor="job-title">Job Title</label>
                 <input
                   type="text"
                   name="job-title"
@@ -144,16 +148,17 @@ const upload = () => {
                 />
               </div>
               <div className="form-div">
-                <label htmlFor="job-description">Job Description</label>
+                <label className="dark:!text-gray-300" htmlFor="job-description">Job Description</label>
                 <textarea
                   rows={5}
                   name="job-description"
                   placeholder="Job Description"
                   id="job-description"
+                  className="upload-textarea"
                 />
               </div>
               <div className="form-div">
-                <label htmlFor="upload-resume">Upload Resume</label>
+                <label className="dark:!text-gray-300" htmlFor="upload-resume">Upload Resume</label>
                 <FileUploader onFileSelect={handleFileSelect} file={file} />
               </div>
               <button type="submit" className="primary-button">

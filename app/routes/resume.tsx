@@ -53,6 +53,8 @@ const resume = () => {
       console.log({resumeUrl, imageUrl, feedback: data.feedback});
     };
 
+    console.log("Feedbact Ats:", feedback?.ATS)
+
     loadResume();
   }, [id]);
 
@@ -63,9 +65,13 @@ const resume = () => {
           <img src="/icons/back.svg" alt="log" className='w-2.5 h-2.5'/>
           <span className='text-gray-800 text-sm font-semibold'>Back to Homepage</span>
         </Link>
+       {feedback && <Link to={`/optimise-resume/${id}`} className='back-button'>
+          <span className='text-gray-800 text-sm font-semibold'>Optimize Resume</span>
+          <img src="/icons/back.svg" alt="log" className='w-2.5 h-2.5'/>
+        </Link>}
       </nav>  
       <div className='flex flex-row w-full max-lg:flex-col-reverse'>
-        <section className='feedback-section bg-[url("/images/bg-small.svg")] bg-cover h-[100vh] sticky top-0 items-center justify-center'>
+        <section className='feedback-section bg-[url("/images/bg-small.svg")] bg-cover sm:h-[100vh] sticky top-0 items-center justify-center'>
           {imageUrl && resumeUrl && (
             <div className='animate-in fade-in duration-1000 gradient-border max-sm:m-0 h-[90%] max-wxl:h-fit  w-fit'>
               <a href={resumeUrl} target='_blank' rel='noopener noreferrer' >
@@ -74,13 +80,13 @@ const resume = () => {
             </div>
           )}
         </section>
-        <section className='feedback-section'>
-          <h2 className='text-4xl text-black font-bold'>Resume Review</h2>
+        <section className='feedback-section dark:bg-blue-950'>
+          <h2 className='text-4xl dark:!text-white font-bold'>Resume Review</h2>
           
           {feedbackLoading && !feedback ? (
-            <>
+            
             <img src="/images/resume-scan-2.gif" alt="" className='w-full'/>
-            </>
+            
           ) :
           feedback ? (
             <div className='flex flex-col gap-8 animat-in fade-in duration-1000'>
@@ -90,7 +96,6 @@ const resume = () => {
            </div>
            ) : (
             <div className='flex items-center justify-center h-[70%]'>
-
              <p className='text-xl'>No Feedback Given</p>
             </div>
            )}

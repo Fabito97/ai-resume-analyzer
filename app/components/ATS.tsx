@@ -5,12 +5,12 @@ const ATS = ({
   suggestions,
 }: {
   score: number;
-  suggestions: { type: "good" | "improve"; tip: string }[];
+  suggestions: { type: "good" | "improve"; tip: string; explanation: string }[];
 }) => {
   return (
     <div
       className={cn(
-        "rounded-2xl shadow-md w-full bg-gradient-to-b to-light-white p-8 flex flex-col gap-4",
+        "rounded-2xl shadow-md w-full bg-gradient-to-b to-white p-8 flex flex-col gap-4",
         score > 69
           ? "from-green-100"
           : score > 49
@@ -41,17 +41,21 @@ const ATS = ({
           performed:
         </p>
         {suggestions.map((suggestion, index) => (
-          <div className="flex flex-row gap-2 items-center" key={index}>
-            <img
-              src={
-                suggestion.type === "good"
+          <div className="flex flex-col gap-2 mt-2 border border-gray-400 rounded-2xl p-2" key={index}>
+            <div className="flex flex-row gap-2 items-center">
+              <img
+                src={
+                  suggestion.type === "good"
                   ? "/icons/check.svg"
                   : "/icons/warning.svg"
-              }
-              alt="ATS"
-              className="w-4 h-4"
-            />
-            <p className="text-lg text-gray-500">{suggestion.tip}</p>
+                }
+                alt="ATS"
+                className="w-4 h-4"
+                />
+              <p className="font-bold text-green-800">{suggestion.tip}</p>
+            </div>
+            
+            <p className=" text-gray-500">{suggestion.explanation}</p>
           </div>
         ))}
         <p className="text-lg text-gray-500">

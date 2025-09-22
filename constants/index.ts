@@ -189,6 +189,7 @@ export const AIResponseFormat = `
         tips: {
           type: "good" | "improve";
           tip: string; //give 3-4 tips
+          explanation: string; //explain in detail here
         }[];
       };
       toneAndStyle: {
@@ -245,4 +246,34 @@ export const prepareInstructions = (
   Provide the feedback using the following format: ${AIResponseFormat}
   Return the analysis as a JSON object, without any other text and without the backticks.
   Do not include any other text or comments.
+
+  # Important
+  Use current date which is September, 2025 not anytime in the past.
+  `;
+
+
+
+  export const prepareOptimizationInstructions = (
+    {
+        resume,
+        feedback
+     }: {
+    resume: string;
+    feedback: string;
+}) =>
+    `You are an expert in ATS (Applicant Tracking System) and resume analysis.
+  Please analyze and rate this resume and suggest how to improve it.
+  The rating can be low if the resume is bad.
+  Be thorough and detailed. Don't be afraid to point out any mistakes or areas for improvement.
+  If there is a lot to improve, don't hesitate to give low scores. This is to help the user to improve their resume.
+  If available, use the job description for the job user is applying to to give more detailed feedback.
+  If provided, take the job description into consideration.
+  The job title is: ${resume}
+  The job description is: ${feedback}
+  Provide the feedback using the following format: ${AIResponseFormat}
+  Return the analysis as a JSON object, without any other text and without the backticks.
+  Do not include any other text or comments.
+
+  # Important
+  Use current date which is September, 2025 not anytime in the past.
   `;

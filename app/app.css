@@ -41,11 +41,11 @@ input {
   @apply w-full p-4 inset-shadow rounded-2xl focus:outline-none bg-white;
 }
 
-textarea {
+.upload-textarea {
   @apply w-full p-4 inset-shadow rounded-2xl focus:outline-none bg-white;
 }
 
-form {
+.main-form {
   @apply flex flex-col items-start gap-8 w-full;
 }
 
