@@ -1,7 +1,6 @@
 import {usePuterStore} from "~/lib/puter";
 import {useEffect} from "react";
 import {useLocation, useNavigate} from "react-router";
-
 export const meta = () => ([
     {title: 'Resumind | Auth'},
     {name: 'description', content: 'Log into your account'}
@@ -10,15 +9,16 @@ export const meta = () => ([
 const Auth = () => {
     const { isLoading, auth } = usePuterStore();
     const location = useLocation();
-    let next = location.search.split('next=')[1]
+    // let next = location.search.split('next=')[1]
     const navigate = useNavigate();
     const params = new URLSearchParams(location.search);
-    // const next = params.get('next') || '/'; // fallback to home or default route
+    const next = params.get('next') || '/'; // fallback to home or default route
 
     useEffect(() => {
+        if (isLoading) return;
         if(auth.isAuthenticated) {
             console.log("Navigating to next:", next)
-            navigate(next)
+            navigate("/")
         } 
     }, [auth.isAuthenticated, next]);
 

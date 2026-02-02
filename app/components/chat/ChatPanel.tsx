@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import ChatInput from "./ChatInput";
 import UserIcon from "~/icons/UserIcon";
-import LoadingSpinner from "./LoadingSpinner";
+import LoadingSpinner from "../LoadingSpinner";
 import type { Message } from "types/message";
 
 export enum Sender {
@@ -42,7 +42,7 @@ const ChatPanel = () => {
           Hello, let's refine your Resume
         </h2> */}
       </div>
-      
+
       <div className="flex-1 p-4 sm:p-6 overflow-y-auto">
         <div className="space-y-6 flex flex-col items-center">
           <div className={`flex items-start ${bubbleAlignment} w-full`}>

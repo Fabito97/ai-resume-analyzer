@@ -3,8 +3,8 @@ import Navbar from "../components/Navbar";
 import { usePuterStore } from "~/lib/puter";
 import { Link, useNavigate, useParams } from "react-router";
 import PaperAirplaneIcon from "~/icons/PaperAirplaneIcon";
-import ChatInput from "~/components/ChatInput";
-import OptimizationPanel from "~/components/OptimizationPanel";
+import ChatInput from "~/components/chat/ChatInput";
+import OptimizationPanel from "~/components/chat/OptimizationPanel";
 
 const optimize = () => {
   const { auth, isLoading, fs, ai, kv } = usePuterStore();

@@ -12,7 +12,7 @@ const Category = ({title, score}:{title:string, score:number}) => {
           <ScoreBadge score={score} />
         </div>
         <p className='text-2xl'>
-          <span className={textColor}>{score}</span>/100
+          <span className={textColor ?? 'text-white'}>{score}</span>/100
         </p>
       </div>
     </div>
@@ -22,13 +22,13 @@ const Category = ({title, score}:{title:string, score:number}) => {
 
 const Summary = ({feedback}:{feedback: Feedback}) => {
   return (
-    <div className='bg-white rounded-2xl shadow-md w-full'>
+    <div className='bg-white dark:bg-gray-800 rounded-2xl shadow-md w-full'>
       <div className='flex flex-row item-center p-4 gap-8'>
         <ScoreGauge score={feedback.overallScore} />
 
         <div className='flex flex-col gap-2'>
-          <h2 className='text-2xl font-bold'>Your Resume Score</h2>
-          <p className='text-sm text-gray-500'>
+          <h2 className='text-2xl font-bold dark:!text-white'>Your Resume Score</h2>
+          <p className='text-sm text-gray-500 dark:!text-white'>
             This score is calculated based on the variables listed below
           </p>
         </div>

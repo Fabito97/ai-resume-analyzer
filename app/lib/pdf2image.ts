@@ -20,14 +20,6 @@ async function loadPdfJs(): Promise<any> {
     pdfjsLib = lib;
     return lib;
   });
-  
-//   loadPromise = import("pdfjs-dist").then((lib) => {
-//     lib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
-//     pdfjsLib = lib;
-//     isLoading = false;
-//   return lib;
-// });
-
 
   return loadPromise;
 }
@@ -85,8 +77,8 @@ export async function convertPdfToImage(
           }
         },
         "image/png",
-        1.0
-      ); // Set quality to maximum (1.0)
+        1.0 // Set quality to maximum (1.0)
+      ); 
     });
   } catch (err) {
     return {

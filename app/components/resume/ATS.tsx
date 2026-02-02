@@ -10,7 +10,7 @@ const ATS = ({
   return (
     <div
       className={cn(
-        "rounded-2xl shadow-md w-full bg-gradient-to-b to-white p-8 flex flex-col gap-4",
+        "rounded-2xl shadow-md w-full dark:!bg-none dark:!text-white bg-gradient-to-b to-white p-8 flex flex-col gap-4",
         score > 69
           ? "from-green-100"
           : score > 49
@@ -36,7 +36,7 @@ const ATS = ({
         <p className="font-medium text-xl">
           How well does your resume pass through Applicant Tracking Systems?
         </p>
-        <p className="text-lg text-gray-500">
+        <p className="text-lg text-gray-500 dark:!text-gray-300">
           Your resume was scanned like an employer would. Here's how it
           performed:
         </p>
@@ -52,13 +52,13 @@ const ATS = ({
                 alt="ATS"
                 className="w-4 h-4"
                 />
-              <p className="font-bold text-green-800">{suggestion.tip}</p>
+              <p className="font-bold text-green-800 dark:!text-gray-300">{suggestion.tip}</p>
             </div>
             
             <p className=" text-gray-500">{suggestion.explanation}</p>
           </div>
         ))}
-        <p className="text-lg text-gray-500">
+        <p className="text-lg text-gray-500 dark:!text-gray-300">
           Want a better score? Improve your resume by applying the suggestions
           listed below.
         </p>

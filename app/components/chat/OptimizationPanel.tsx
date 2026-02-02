@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import DOMPurify from "dompurify";
 import { marked } from "marked";
 import type { Message } from "types/message";
@@ -6,6 +6,9 @@ import ChatInput from "./ChatInput";
 import ChatPanel from "./ChatPanel";
 
 const OptimizationPanel = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const [message, setMessage] = useState<Message>({
     text: "",
     sender: "Agent",

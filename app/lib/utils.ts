@@ -23,3 +23,5 @@ export function cn(...inputs: ClassValue[]) {
  }
 
  export const generateUUID = () => crypto.randomUUID();
+
+export const currentDate = new Date().toISOString().split("T")[0];
