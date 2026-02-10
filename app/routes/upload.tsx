@@ -1,116 +1,90 @@
-import { prepareInstructions } from "constants/index";
+import { prepareInstructions } from "../constants/index";
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate, useParams } from "react-router";
 import FileUploader from "~/components/resume/FileUploader";
 import Navbar from "~/components/Navbar";
 import { convertPdfToImage } from "~/lib/pdf2image";
 import { usePuterStore } from "~/lib/puter";
 import { generateUUID } from "~/lib/utils";
+import { useUpload } from "~/hooks/useUpload";
 
 const upload = () => {
   const { auth, isLoading, fs, ai, kv } = usePuterStore();
   const navigate = useNavigate();
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [statusText, setStatusText] = useState("");
   const [file, setFile] = useState<File | null>(null);
+  const [form, setForm] = useState({
+    companyName: "",
+    jobTitle: "",
+    jobDescription: "",
+  });
+
+  const [resumePath, setResumePath] = useState<string>("");
+  const { handleAnalyze, isProcessing, statusText, error } = useUpload({
+    onSuccess: (jobId, version) =>
+      navigate(`/resume/${jobId}?version=${version}`),
+  });
+  const { id } = useParams<{ id: string }>();
 
   useEffect(() => {
+    if (isLoading) return;
+
     if (!auth.isAuthenticated) navigate("auth?next=/upload");
   }, [auth.isAuthenticated]);
 
-  const handleAnalyze = async ({
-    companyName,
-    jobTitle,
-    jobDescription,
-    file,
-  }: {
-    companyName: string;
-    jobTitle: string;
-    jobDescription: string;
-    file: File;
-  }) => {
-    setIsProcessing(true);
-    setStatusText("Uploading the file...");
-    const uploadedFile = await fs.upload([file]);
-    if (!uploadedFile)
-      return setStatusText("Error: Failed to upload File. Please try again.");
+  useEffect(() => {
+    const getJob = async () => {
+      if (!id) return;
 
-    setStatusText("Converting to image...");
-    const imageFile = await convertPdfToImage(file);
-    console.log("Image File:", imageFile);
-    if (!imageFile.file) {
-      // setIsProcessing(false)
-      return setStatusText(
-        "Error: Failed to convert PDF to image. Please try again.",
-      );
-    }
+      const job = await kv.get(`jobApplication:${id}`);
+      const parsedJob: JobApplication = job ? JSON.parse(job) : null;
 
-    setStatusText("Uploading the image...");
-    const uploadedImage = await fs.upload([imageFile.file]);
-    if (!uploadedImage)
-      return setStatusText("Error: Failed to upload image. Please try again.");
-
-    setStatusText("Preparing data...");
-    const uuid = generateUUID();
-    const data = {
-      id: uuid,
-      resumePath: uploadedFile.path,
-      imagePath: uploadedImage.path,
-      companyName,
-      jobDescription,
-      jobTitle,
-      feedback: "",
-    };
-    try {
-      await kv.set(`resume:${uuid}`, JSON.stringify(data));
-
-      console.log("Form Data:", JSON.stringify(data));
-
-      setStatusText("Analyzing... This may take a few minutes.");
-      const message = prepareInstructions({ jobTitle, jobDescription });
-      console.log("Message:", message);
-
-      const feedback = await ai.feedback(uploadedFile.path, message);
-      if (!feedback)
-        return setStatusText(
-          "Error: Failed to analyze resume. Please try again.",
+      if (parsedJob) {
+        const jobResume = parsedJob?.resumeVersionMeta?.find(
+          (resume) => parsedJob.currentVersion === resume.version,
         );
 
-      const feedbackText =
-        typeof feedback.message.content === "string"
-          ? feedback.message.content
-          : feedback.message.content[0].text;
-
-      data.feedback = JSON.parse(feedbackText);
-      await kv.set(`resume:${uuid}`, JSON.stringify(data));
-
-      setStatusText("Analysis complete, redirecting...");
-      console.log("Data:", data);
-
-      navigate(`/resume/${uuid}`);
-    } catch (error) {
-      console.error(error);
-      throw new Error(`An error occurred while generation feedback: ${error}`);
-    }
-  };
+        setForm({
+          jobDescription: parsedJob.jobDescription,
+          jobTitle: parsedJob.jobTitle,
+          companyName: parsedJob.companyName,
+        });
+        setResumePath(jobResume?.resumePath ?? "");
+      }
+    };
+    getJob();
+  }, [id]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const form = e.currentTarget.closest("form");
-    if (!form) return;
-    const formData = new FormData(form);
-    const companyName = formData.get("company-name") as string;
-    const jobTitle = formData.get("job-title") as string;
-    const jobDescription = formData.get("job-description") as string;
+     if (!file) {
+    alert("Please upload a resume");
+    return;
+  }
+    
+  if (!form || !form.jobDescription || !form.jobTitle) {
+    alert("Please provide a Jobitle and description");
+    return;
+  }
 
-    if (!file) return;
-
-    handleAnalyze({ companyName, jobTitle, jobDescription, file });
+  handleAnalyze({
+    companyName: form.companyName,
+    jobTitle: form.jobTitle,
+    jobDescription: form.jobDescription,
+    file,
+    jobId: id, // optional: pass existing job ID for updating
+  });
   };
 
   const handleFileSelect = (file: File | null) => {
     setFile(file);
+  };
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   return (
@@ -134,11 +108,18 @@ const upload = () => {
                 className="w-full"
               />
             </>
+          ) : error ? (
+            <div>
+              <p className="dark:!text-gray-300 p-5 border border-red-400">
+                {error}
+              </p>
+            </div>
           ) : (
             <h2 className="dark:!text-gray-300">
               Drop your resume for an ATS score and improvement tips
             </h2>
           )}
+
           {!isProcessing && (
             <form
               id="upload-form"
@@ -146,14 +127,16 @@ const upload = () => {
               className="flex flex-col gap-4 mt-8 main-form dark:!text-gray-700"
             >
               <div className="form-div">
-                <label className="dark:!text-gray-300" htmlFor="company-name">
+                <label className="dark:!text-gray-300" htmlFor="companyName">
                   Company Name
                 </label>
                 <input
                   type="text"
-                  name="company-name"
+                  name="companyName"
+                  value={form.companyName}
+                  onChange={handleInputChange}
                   placeholder="Company Name"
-                  id="company-name"
+                  id="companyName"
                 />
               </div>
               <div className="form-div">
@@ -162,7 +145,9 @@ const upload = () => {
                 </label>
                 <input
                   type="text"
-                  name="job-title"
+                  name="jobTitle"
+                  value={form.jobTitle}
+                  onChange={handleInputChange}
                   placeholder="Job Title"
                   id="job-title"
                 />
@@ -176,7 +161,9 @@ const upload = () => {
                 </label>
                 <textarea
                   rows={5}
-                  name="job-description"
+                  name="jobDescription"
+                  value={form.jobDescription}
+                  onChange={handleInputChange}
                   placeholder="Job Description"
                   id="job-description"
                   className="upload-textarea"
@@ -186,7 +173,11 @@ const upload = () => {
                 <label className="dark:!text-gray-300" htmlFor="upload-resume">
                   Upload Resume
                 </label>
-                <FileUploader onFileSelect={handleFileSelect} file={file} />
+                <FileUploader
+                  onFileSelect={handleFileSelect}
+                  file={file}
+                  existingResumePath={resumePath}
+                />
               </div>
               <button type="submit" className="primary-button">
                 Analyze Resume

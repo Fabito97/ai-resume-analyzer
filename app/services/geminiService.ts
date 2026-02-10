@@ -1,5 +1,5 @@
 import { GoogleGenAI, type Content } from "@google/genai";
-import type { Message } from "types/message";
+import type { Message } from "~/types/message";
 
 const apiKey = process.env.API_KEY;
 
@@ -18,11 +18,10 @@ const buildHistory = (messages: Message[]): Content[] => {
   }));
 };
 
-
 export const streamChatResponse = async (
   history: Message[],
   newPrompt: string,
-  systemInstruction: string
+  systemInstruction: string,
 ) => {
   try {
     const model = "gemiini-2.5-flash";
@@ -33,16 +32,16 @@ export const streamChatResponse = async (
       history: buildHistory(history),
       config: {
         systemInstruction,
-      }
-    })
+      },
+    });
 
     // Send the new message
-    const result = await chat.sendMessageStream({message: newPrompt})
-    return result
+    const result = await chat.sendMessageStream({ message: newPrompt });
+    return result;
   } catch (error) {
     console.error("Gemini API error:", error);
     throw new Error(
-      "Failed to get response from AI. Please check your API key and network connection."
-    )
+      "Failed to get response from AI. Please check your API key and network connection.",
+    );
   }
-}
+};

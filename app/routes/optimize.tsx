@@ -18,7 +18,7 @@ const optimize = () => {
   useEffect(() => {
     if (!isLoading && !auth.isAuthenticated)
       navigate(`auth?next=/optimise-resume/${id}`);
-  }, [isLoading]);
+  }, [auth.isAuthenticated, isLoading]);
 
   console.log("Feedback:", feedback);
   useEffect(() => {

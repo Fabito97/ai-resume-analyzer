@@ -22,9 +22,8 @@ declare global {
       ai: {
         chat: (
           prompt: string | ChatMessage[],
-          imageURL?: string | PuterChatOptions,
+          options?: PuterChatOptions,
           testMode?: boolean,
-          options?: PuterChatOptions
         ) => Promise<Object>;
         img2txt: (
           image: string | File | Blob,
@@ -68,9 +67,8 @@ interface PuterStore {
   ai: {
     chat: (
       prompt: string | ChatMessage[],
-      imageURL?: string | PuterChatOptions,
+      options?: PuterChatOptions,
       testMode?: boolean,
-      options?: PuterChatOptions
     ) => Promise<AIResponse | undefined>;
     feedback: (
       path: string,
@@ -322,7 +320,7 @@ export const usePuterStore = create<PuterStore>((set, get) => {
       return;
     }
     // return puter.ai.chat(prompt, imageURL, testMode, options);
-    return puter.ai.chat(prompt, imageURL, testMode, options) as Promise<
+    return puter.ai.chat(prompt, options, testMode) as Promise<
       AIResponse | undefined
     >;
   };
@@ -351,7 +349,7 @@ export const usePuterStore = create<PuterStore>((set, get) => {
           ],
         },
       ],
-      { model: "claude-opus-4-5" }
+      { model: "claude-3-7-sonnet-latest" }
     ) as Promise<AIResponse | undefined>;
   };
 
@@ -435,10 +433,9 @@ export const usePuterStore = create<PuterStore>((set, get) => {
     ai: {
       chat: (
         prompt: string | ChatMessage[],
-        imageURL?: string | PuterChatOptions,
+        options?: PuterChatOptions,
         testMode?: boolean,
-        options?: PuterChatOptions
-      ) => chat(prompt, imageURL, testMode, options),
+      ) => chat(prompt, options, testMode),
       feedback: (path: string, message: string) => feedback(path, message),
       img2txt: (image: string | File | Blob, testMode?: boolean) =>
         img2txt(image, testMode),

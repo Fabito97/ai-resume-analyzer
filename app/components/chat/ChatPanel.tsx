@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import ChatInput from "./ChatInput";
 import UserIcon from "~/icons/UserIcon";
 import LoadingSpinner from "../LoadingSpinner";
-import type { Message } from "types/message";
+import type { Message } from "~/types/message";
 
 export enum Sender {
   User = "User",

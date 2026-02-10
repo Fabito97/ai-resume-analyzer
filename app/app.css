@@ -85,11 +85,11 @@ input {
   }
 
   .resume-card {
-    @apply flex flex-col gap-4 sm:gap-8 sm:h-[560px] min-h-[460px] w-[350px] lg:w-[350px] xl:w-[400px] bg-white rounded-2xl p-4;
+    @apply flex flex-col gap-4   w-[300px] h-[400px] bg-white rounded-2xl p-4;
   }
 
   .resume-card-header {
-    @apply flex flex-row gap-2 justify-between min-h-[110px] max-sm:flex-col items-center max-md:justify-center max-md:items-center;
+    @apply flex flex-row gap-2 justify-between  max-sm:flex-col items-center max-md:justify-center max-md:items-center;
   }
 
   .feedback-section {

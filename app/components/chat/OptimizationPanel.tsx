@@ -1,7 +1,7 @@
 import React, { useMemo, useRef, useState } from "react";
 import DOMPurify from "dompurify";
 import { marked } from "marked";
-import type { Message } from "types/message";
+import type { Message } from "~/types/message";
 import ChatInput from "./ChatInput";
 import ChatPanel from "./ChatPanel";
 

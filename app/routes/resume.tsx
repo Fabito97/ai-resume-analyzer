@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router";
 import ATS from "~/components/resume/ATS";
 import Details from "~/components/resume/Details";
 import Summary from "~/components/resume/Summary";
@@ -14,6 +14,9 @@ const resume = () => {
   const { auth, isLoading, fs, ai, kv } = usePuterStore();
 
   const { id } = useParams<{ id: string }>();
+  const [searchParams] = useSearchParams();
+  const version = Number(searchParams.get("version") ?? 1);
+
   const [imageUrl, setImagUrl] = useState<string | null>();
   const [resumeUrl, setResumeUrl] = useState<string | null>();
   const [feedback, setFeedback] = useState<Feedback | null>(null);
@@ -21,15 +24,19 @@ const resume = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!isLoading && !auth.isAuthenticated)
-      navigate(`auth?next=/resume/${id}`);
-  }, [isLoading]);
+    if (isLoading) return;
+
+    if (!auth.isAuthenticated)
+      navigate(
+        `/auth?next=${encodeURIComponent(`/resume/${id}?version=${version}`)}`,
+      );
+  }, [auth.isAuthenticated, isLoading]);
 
   console.log("Feedback:", feedback);
   useEffect(() => {
     const loadResume = async () => {
       setFeedbackLoading(true);
-      const resume = await kv.get(`resume:${id}`);
+      const resume = await kv.get(`resume:${id}:v${version}`);
       if (!resume) return;
 
       const data = JSON.parse(resume);
@@ -94,7 +101,7 @@ const resume = () => {
         <section className="feedback-section dark:bg-gray-800">
           <h2 className="text-4xl dark:!text-white font-bold">Resume Review</h2>
 
-          {feedbackLoading && !feedback ? (
+          {feedbackLoading ? (
             <img src="/images/resume-scan-2.gif" alt="" className="w-full" />
           ) : feedback ? (
             <div className="flex flex-col gap-8 animate-in fade-in duration-1000">
@@ -106,8 +113,11 @@ const resume = () => {
               <Details feedback={feedback} />
             </div>
           ) : (
-            <div className="flex items-center justify-center h-[70%]">
+            <div className="flex flex-col gap-3 items-center justify-center h-[70%] text-white">
               <p className="text-xl">No Feedback Given</p>
+              <Link to={`/upload/${id}`} className="text-xl text-blue-200 border p-2 rounded-lg hover:bg-gray-50 hover:text-gray-800">
+                Re-analyze
+              </Link>
             </div>
           )}
         </section>
