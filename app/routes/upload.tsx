@@ -1,6 +1,6 @@
 import { prepareInstructions } from "../constants/index";
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router";
 import FileUploader from "~/components/resume/FileUploader";
 import Navbar from "~/components/Navbar";
 import { convertPdfToImage } from "~/lib/pdf2image";
@@ -12,18 +12,29 @@ const upload = () => {
   const { auth, isLoading, fs, ai, kv } = usePuterStore();
   const navigate = useNavigate();
   const [file, setFile] = useState<File | null>(null);
+  const [imagePath, setImagePath] = useState<string>("");
+  const [resumePath, setResumePath] = useState<string>("");
   const [form, setForm] = useState({
     companyName: "",
     jobTitle: "",
     jobDescription: "",
   });
 
-  const [resumePath, setResumePath] = useState<string>("");
   const { handleAnalyze, isProcessing, statusText, error } = useUpload({
     onSuccess: (jobId, version) =>
       navigate(`/resume/${jobId}?version=${version}`),
+    onError: (_, jobId: string, version:number ) => {
+      if (jobId && version) {
+        // Reload the page with the jobId to fetch the exact version
+        navigate(`/upload/${jobId}?version=${version}`);
+      }
+      console.error("Upload failed:", error);
+    },
   });
   const { id } = useParams<{ id: string }>();
+  const [searchParams] = useSearchParams();
+  const version = Number(searchParams.get("version") ?? 1);
+
 
   useEffect(() => {
     if (isLoading) return;
@@ -33,14 +44,14 @@ const upload = () => {
 
   useEffect(() => {
     const getJob = async () => {
-      if (!id) return;
+      if (!id || !version) return;
 
       const job = await kv.get(`jobApplication:${id}`);
       const parsedJob: JobApplication = job ? JSON.parse(job) : null;
 
       if (parsedJob) {
         const jobResume = parsedJob?.resumeVersionMeta?.find(
-          (resume) => parsedJob.currentVersion === resume.version,
+          (resume) => resume.version === version || parsedJob.currentVersion,
         );
 
         setForm({
@@ -49,31 +60,34 @@ const upload = () => {
           companyName: parsedJob.companyName,
         });
         setResumePath(jobResume?.resumePath ?? "");
+        setImagePath(jobResume?.imagePath ?? "");
       }
     };
     getJob();
-  }, [id]);
+  }, [id, version]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-     if (!file) {
-    alert("Please upload a resume");
-    return;
-  }
-    
-  if (!form || !form.jobDescription || !form.jobTitle) {
-    alert("Please provide a Jobitle and description");
-    return;
-  }
+    if (!file && !resumePath) {
+      alert("Please upload a resume");
+      return;
+    }
 
-  handleAnalyze({
-    companyName: form.companyName,
-    jobTitle: form.jobTitle,
-    jobDescription: form.jobDescription,
-    file,
-    jobId: id, // optional: pass existing job ID for updating
-  });
+    if (!form || !form.jobDescription || !form.jobTitle) {
+      alert("Please provide a Jobitle and description");
+      return;
+    }
+
+    handleAnalyze({
+      companyName: form.companyName,
+      jobTitle: form.jobTitle,
+      jobDescription: form.jobDescription,
+      file,
+      jobId: id, // optional: pass existing job ID for updating
+      existingImagePath: imagePath,
+      existingResumePath: resumePath,
+    });
   };
 
   const handleFileSelect = (file: File | null) => {
@@ -176,6 +190,7 @@ const upload = () => {
                 <FileUploader
                   onFileSelect={handleFileSelect}
                   file={file}
+                  onRemoveResumePath={() => setResumePath("")}
                   existingResumePath={resumePath}
                 />
               </div>

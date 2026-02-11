@@ -42,7 +42,7 @@ const ResumeCard = ({
             <h2 className="!text-black text-md font-bold">Resume</h2>
           )}
         </div>
-        {overallScore && (
+        {overallScore > 0 && (
           <div className="flex-shrink-0">
             <ScoreCircle score={overallScore}></ScoreCircle>
           </div>

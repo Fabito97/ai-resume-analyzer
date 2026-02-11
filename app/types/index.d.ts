@@ -132,14 +132,13 @@ interface JobApplication {
   updatedAt: string;
   resumeVersionMeta?: ResumeVersionMeta[]
 }
-
 interface ResumeVersionMeta {
   version: number;
   source: "upload" | "optimized";
   createdAt: string;
   overallScore?: number;  // quick access to score without reading full resume
-  resumePath?: string;  // Add this if you need direct access to the file
-  imagePath?: string;   // Add this if you need the image
+  resumePath: string;  // Add this if you need direct access to the file
+  imagePath: string;   // Add this if you need the image
 }
 // ─── Resume ──────────────────────────────────────────────────────────────────
 // A committed checkpoint of the resume for a given JobApplication.
@@ -164,10 +163,16 @@ interface Resume {
   resumeText: StructuredResume | null; // structured resume (null for v1 uploads)
   source: "upload" | "optimized";
   feedback: Feedback | null; // null until analysis is run
-  createdAt: string;
+  createdAt?: string;
   status: "pending" | "failed" | "complete"
 }
 
+interface FeedbackEntry {
+  id: string;
+  feedback: Feedback | null;
+  status: "pending" | "failed" | "complete";
+  createdAt: string;
+}
 // ─── Feedback ────────────────────────────────────────────────────────────────
 // Structured analysis result returned by the AI after analyzing a resume.
 
@@ -215,7 +220,7 @@ interface Message {
   id: string;
   role: "user" | "ai" | "system";
   content: string;
-  createdAt: string;
+  createdAt?: string;
 }
 
 interface ChatSession {

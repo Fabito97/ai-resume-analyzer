@@ -1,7 +1,6 @@
 import React, { useMemo, useRef, useState } from "react";
 import DOMPurify from "dompurify";
 import { marked } from "marked";
-import type { Message } from "~/types/message";
 import ChatInput from "./ChatInput";
 import ChatPanel from "./ChatPanel";
 
@@ -10,24 +9,24 @@ const OptimizationPanel = () => {
   const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [message, setMessage] = useState<Message>({
-    text: "",
-    sender: "Agent",
+    content: "",
+    role: "ai",
     id: "1",
   });
 
   const reviewHtml = useMemo(() => {
-    if (!message.text) return "";
+    if (!message.content) return "";
     try {
-      const raw = marked.parse(message.text);
+      const raw = marked.parse(message.content);
       // marked.use({breaks: true})
       // marked.parse can be sync or async depending on extensions; coerce to string
       return DOMPurify.sanitize(String(raw));
     } catch (e) {
       // fall back to escaped text if parsing fails
       console.error("Error parsing review markdown:", e);
-      return DOMPurify.sanitize(String(message.text));
+      return DOMPurify.sanitize(String(message.content));
     }
-  }, [message.text]);
+  }, [message.content]);
 
   return (
     <section className="flex  h-full">

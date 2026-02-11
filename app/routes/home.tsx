@@ -89,7 +89,7 @@ export default function Home() {
       <Navbar />
 
       <section className="main-section">
-        <div className="page-heading my-10">
+        <div className="page-heading mb-10">
           <h1 className=" dark:!text-gray-300">
             Track Your Applications & Resume Ratings
           </h1>

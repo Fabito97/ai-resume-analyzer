@@ -4,22 +4,17 @@ import { formatSize } from "~/lib/utils";
 
 interface FileUploaderProps {
   onFileSelect?: (file: File | null) => void;
+  onRemoveResumePath?: () => void;
   file?: File | null;
   existingResumePath?: string | null;
 }
 
 const FileUploader = ({
   onFileSelect,
+  onRemoveResumePath,
   file,
   existingResumePath,
 }: FileUploaderProps) => {
-  const [resumePath, setResumePath] = useState<string | null>(null)
-
-  useEffect(() => {
-    if (existingResumePath) {
-      setResumePath(existingResumePath)
-    }
-  }, [existingResumePath])
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
@@ -45,7 +40,7 @@ const FileUploader = ({
       <div {...getRootProps()}>
         <input {...getInputProps()} />
         <div className="space-y-4 cursor-pointer">
-          {file || resumePath ? (
+          {file || existingResumePath ? (
             <div
               className="uploader-selected-file"
               onClick={(e) => e.stopPropagation()}
@@ -54,7 +49,7 @@ const FileUploader = ({
               <div className="flex items-center space-x-3">
                 <div>
                   <p className="text-sm text-gray-700 font-medium truncate max-w-xs">
-                    {file?.name || resumePath}
+                    {file?.name || existingResumePath}
                   </p>
                   <p className="text-sm text-gray-500">
                     {file && formatSize(file.size)}
@@ -66,8 +61,8 @@ const FileUploader = ({
                 onClick={(e) => {
                   if(file) {
                     onFileSelect?.(null);
-                  } else if (resumePath) {
-                    setResumePath(null)
+                  } else if (existingResumePath) {
+                    onRemoveResumePath?.();
                   }
                 }}
               >

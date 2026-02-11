@@ -2,23 +2,22 @@ import React, { useState } from "react";
 import ChatInput from "./ChatInput";
 import UserIcon from "~/icons/UserIcon";
 import LoadingSpinner from "../LoadingSpinner";
-import type { Message } from "~/types/message";
 
 export enum Sender {
-  User = "User",
-  AI = "Agent",
+  User = "user",
+  AI = "ai",
 }
 
 const ChatPanel = () => {
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<Message>({
-    text: "",
-    sender: "Agent",
+    content: "",
+    role: "ai",
     id: "1",
   });
 
-  const isUser = message.sender === Sender.User;
-  const isAI = message.sender === Sender.AI;
+  const isUser = message.role === Sender.User;
+  const isAI = message.role === Sender.AI;
 
   const bubbleAlignment = isUser ? "justify-end" : "justify-start";
   const bubbleColor = isUser ? "bg-gray-600" : "bg-gray-800";
@@ -48,13 +47,13 @@ const ChatPanel = () => {
           <div className={`flex items-start ${bubbleAlignment} w-full`}>
             {isAI && <AILogo />}
             <div className={bubbleStyles}>
-              {isAI && message.text === "" ? (
+              {isAI && message.content === "" ? (
                 <LoadingSpinner />
               ) : (
                 // ) : isAI ? (
                 //   <div className={""}></div>
                 <p className="text-white whitespace-pre-wrap break-words">
-                  {message.text}
+                  {message.content}
                 </p>
               )}
             </div>
