@@ -1,8 +1,8 @@
 
 export interface Message {
   id: string;
-  text: string;
-  sender: "Agent" | "User";
+  content: string;
+  role: "Agent" | "User";
 }
 
 

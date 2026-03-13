@@ -10,11 +10,11 @@ if (!apiKey) {
 const ai = new GoogleGenAI({ apiKey });
 
 const buildHistory = (messages: Message[]): Content[] => {
-  const validMessages = messages.filter((msg) => msg.text.trim() !== "");
+  const validMessages = messages.filter((msg) => msg.content.trim() !== "");
 
   return validMessages.map((msg) => ({
-    role: String(msg.sender) === "user" ? "user" : "assistant",
-    parts: [{ text: msg.text }],
+    role: String(msg.role) === "user" ? "user" : "assistant",
+    parts: [{ text: msg.content }],
   }));
 };
 

@@ -8,7 +8,7 @@ export enum Sender {
   AI = "ai",
 }
 
-const ChatPanel = () => {
+const ChatInterface = () => {
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<Message>({
     content: "",
@@ -78,4 +78,4 @@ const ChatPanel = () => {
   );
 };
 
-export default ChatPanel;
+export default ChatInterface;

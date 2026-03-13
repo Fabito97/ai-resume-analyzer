@@ -2,7 +2,7 @@ import React, { useMemo, useRef, useState } from "react";
 import DOMPurify from "dompurify";
 import { marked } from "marked";
 import ChatInput from "./ChatInput";
-import ChatPanel from "./ChatPanel";
+import ChatInterface from "./ChatInterface";
 
 const OptimizationPanel = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -30,7 +30,7 @@ const OptimizationPanel = () => {
 
   return (
     <section className="flex  h-full">
-      <ChatPanel />
+      <ChatInterface />
       <div
         className="flex-1 p-4 text-white"
         dangerouslySetInnerHTML={{ __html: reviewHtml }}
